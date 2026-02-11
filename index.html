@@ -2,10 +2,613 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDCat – Deploy Without Fear</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --surface: rgba(20, 20, 20, 0.6);
+            --surface-solid: #0a0a0a;
+            --accent: #0a84ff;
+            --accent-glow: rgba(10, 132, 255, 0.3);
+            --text: #f5f5f7;
+            --text-secondary: #86868b;
+            --danger: #ff453a;
+            --success: #30d158;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            /* Тонкий шум для премиальности */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Канвас на заднем плане, но с pointer-events: none, чтобы не перехватывал скролл */
+        #canvas-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            opacity: 0.8; /* Чуть повысил для четкости после PixelRatio фикса */
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 980px;
+            text-align: center;
+            /* Легкий блюр под текстом, чтобы 3D не мешало читать */
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+            padding: 40px;
+            border-radius: 40px;
+        }
+
+        /* Декоративное свечение */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 120vw; height: 120vw;
+            background: radial-gradient(circle, rgba(10,132,255,0.08) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .eyebrow {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #fff 20%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(20px, 3vw, 24px);
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- BUTTONS --- */
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 16px 36px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 24px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+        
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text);
+        }
+
+        .note {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            opacity: 0.7;
+        }
+
+        /* --- SECTIONS --- */
+        .section {
+            padding: 120px 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- CARDS --- */
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
+            margin: 60px 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px 40px;
+            position: relative;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            /* Оптимизация композиции слоев */
+            will-change: transform; 
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 24px; right: 24px; /* Переместил в угол для чистоты */
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-badge.danger { background: rgba(255, 69, 58, 0.2); color: var(--danger); border: 1px solid rgba(255, 69, 58, 0.3); }
+        .card-badge.success { background: rgba(48, 209, 88, 0.2); color: var(--success); border: 1px solid rgba(48, 209, 88, 0.3); }
+
+        .card h3 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+        
+        .card-stat {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 32px 0;
+            letter-spacing: -2px;
+            font-variant-numeric: tabular-nums;
+        }
+        .card-stat.danger { color: var(--danger); text-shadow: 0 0 30px rgba(255, 69, 58, 0.2); }
+        .card-stat.success { color: var(--success); text-shadow: 0 0 30px rgba(48, 209, 88, 0.2); }
+
+        .card p { color: var(--text-secondary); line-height: 1.6; font-size: 17px; }
+
+        /* --- STEPS --- */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #0062b8);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 20px rgba(10, 132, 255, 0.2);
+        }
+
+        .step h4 { font-size: 20px; margin-bottom: 12px; font-weight: 600; }
+        
+        /* --- MISSION & FOOTER --- */
+        .mission {
+            background: linear-gradient(180deg, transparent 0%, rgba(10,132,255,0.03) 50%, transparent 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .highlight { color: var(--text); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
+        
+        footer { padding: 80px 20px; text-align: center; border-top: 1px solid var(--border); background: var(--surface-solid); }
+        
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 42px; }
+            .card { padding: 32px 24px; }
+            .card-badge { position: static; display: inline-block; margin-bottom: 16px; }
+            .cta-group { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    
+
+    <section class="hero">
+        <div id="canvas-container"></div>
+        <div class="hero-content">
+            <div class="eyebrow">Alpha Release</div>
+            <h1>Deploy Without Fear.</h1>
+            <p class="hero-subtitle">
+                Your app goes viral? Celebrate. <br>
+                Don't file for bankruptcy due to bandwidth bills.
+            </p>
+            <div class="cta-group">
+                <button class="btn btn-primary" id="waitlistBtn">Join Waitlist</button>
+                <button class="btn btn-secondary">See How It Works</button>
+            </div>
+            <p class="note">Open Source • No Credit Card Required</p>
+        </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The "Success Tax"</h2>
+                <p style="color: var(--text-secondary); font-size: 20px;">
+                    Current platforms punish you for growing too fast.
+                </p>
+            </div>
+
+            <div class="comparison">
+                <div class="card">
+                    <div class="card-badge danger">The Trap</div>
+                    <h3>Legacy Platforms</h3>
+                    <p>Free tier hooks you in. Then your project hits the front page of HackerNews.</p>
+                    <div class="card-stat danger">$4,500</div>
+                    <p>Bill for one viral weekend.<br><strong>$40+ per 100GB</strong> bandwidth overage.</p>
+                </div>
+
+                <div class="card" style="border-color: rgba(48, 209, 88, 0.3);">
+                    <div class="card-badge success">The Fix</div>
+                    <h3>CDCat</h3>
+                    <p>Same traffic. Same viral spike. Same global reach via Cloudflare.</p>
+                    <div class="card-stat success">$15</div>
+                    <p>Flat monthly rate.<br><strong>Zero egress fees</strong>. We use R2 + Dedicated Metal.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: var(--surface-solid);">
+        <div class="container">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Connect Repo</h4>
+                    <p>Push to GitHub. We auto-detect Next.js, Go, Rust, or static HTML.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Isolated Build</h4>
+                    <p>We spin up a transient Docker container. Your build, your rules.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Global Edge</h4>
+                    <p>Assets sync to Cloudflare R2. Served from 300+ cities instantly.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h4>Sleep Well</h4>
+                    <p>No bandwidth limits. No surprise invoices. Just code.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p style="font-weight: 600; color: var(--text); font-size: 18px; margin-bottom: 12px;">CDCat</p>
+        <p>Built by developers who got burned by cloud bills.</p>
+        <p style="margin-top: 24px; font-size: 13px; opacity: 0.5;">
+            &copy; 2026 CDCat Project. <br>Kyiv, Ukraine.
+        </p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // === 3D ENGINE SETUP ===
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // Fog for depth fading - hides the edges of the conveyor
+        scene.fog = new THREE.FogExp2(0x000000, 0.035);
+
+        // ISOMETRIC CAMERA SETUP
+        // We use Orthographic to achieve that engineering/schematic look
+        const viewSize = 35; 
+        const aspect = window.innerWidth / window.innerHeight;
+        const camera = new THREE.OrthographicCamera(
+            -viewSize * aspect, viewSize * aspect, 
+            viewSize, -viewSize, 
+            1, 1000
+        );
+        camera.position.set(20, 20, 20); // Isometric angle
+        camera.lookAt(scene.position);
+
+        // RENDERER OPTIMIZATION
+        const renderer = new THREE.WebGLRenderer({ 
+            alpha: true, 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        
+        // Critical for crisp text/lines on Retina displays
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // --- ASSETS ---
+        const beltColor = 0x111111;
+        const boxColor = 0x1a1a1a;
+        const accentColor = 0x0a84ff;
+
+        // Materials (Created once for performance)
+        const materials = {
+            belt: new THREE.MeshStandardMaterial({ 
+                color: beltColor, roughness: 0.7, metalness: 0.1 
+            }),
+            rail: new THREE.MeshBasicMaterial({ color: accentColor }),
+            glow: new THREE.MeshBasicMaterial({ 
+                color: accentColor, transparent: true, opacity: 0.2 
+            }),
+            box: new THREE.MeshStandardMaterial({ 
+                color: boxColor, roughness: 0.2, metalness: 0.5
+            }),
+            scanner: new THREE.MeshBasicMaterial({ 
+                color: accentColor, transparent: true, opacity: 0.1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending 
+            })
+        };
+
+        // --- SCENE CONSTRUCTION ---
+        
+        // Lighting
+        const ambLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 5);
+        scene.add(dirLight);
+        
+        // Blue rim light for "Tech" vibe
+        const rimLight = new THREE.DirectionalLight(0x0a84ff, 1.2);
+        rimLight.position.set(-10, 5, -10);
+        scene.add(rimLight);
+
+        // The Conveyor Belt Structure
+        const beltGroup = new THREE.Group();
+        
+        // Base
+        const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(80, 1, 6), materials.belt);
+        beltMesh.position.y = -2;
+        beltGroup.add(beltMesh);
+
+        // Rails
+        const railGeo = new THREE.BoxGeometry(80, 0.1, 0.1);
+        const rail1 = new THREE.Mesh(railGeo, materials.rail);
+        rail1.position.set(0, -1.4, 3.1);
+        const rail2 = new THREE.Mesh(railGeo, materials.rail);
+        rail2.position.set(0, -1.4, -3.1);
+        beltGroup.add(rail1, rail2);
+
+        scene.add(beltGroup);
+
+        // Scanner Beam
+        const scannerMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 12), materials.scanner);
+        scannerMesh.rotation.y = Math.PI / 2;
+        scene.add(scannerMesh);
+
+        // Boxes (The Packages)
+        const boxes = [];
+        const boxGeo = new THREE.BoxGeometry(2.5, 2.5, 2.5);
+        const edgesGeo = new THREE.EdgesGeometry(boxGeo);
+        const edgeMat = new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.4 });
+
+        for(let i = 0; i < 15; i++) {
+            const boxGroup = new THREE.Group();
+            
+            const mesh = new THREE.Mesh(boxGeo, materials.box);
+            const edges = new THREE.LineSegments(edgesGeo, edgeMat.clone()); // Clone to animate opacity individually
+            
+            boxGroup.add(mesh);
+            boxGroup.add(edges);
+            
+            // Random initial placement
+            boxGroup.position.set(-40 + i * 6, -0.25, 0);
+            boxGroup.rotation.y = (Math.random() - 0.5) * 0.4;
+            
+            // State management
+            boxGroup.userData = {
+                state: 'belt', // 'belt' or 'flying'
+                velocity: new THREE.Vector3(),
+                rotationSpeed: new THREE.Vector3(),
+                originalY: -0.25
+            };
+
+            scene.add(boxGroup);
+            boxes.push(boxGroup);
+        }
+
+        // --- ANIMATION LOOP ---
+        let time = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.02;
+
+            // Animate Scanner
+            const scannerX = Math.sin(time * 0.5) * 5;
+            scannerMesh.position.x = scannerX;
+            scannerMesh.material.opacity = 0.1 + Math.abs(Math.sin(time * 2)) * 0.2;
+
+            // Animate Boxes
+            boxes.forEach(box => {
+                const ud = box.userData;
+                const edges = box.children[1];
+
+                if (ud.state === 'belt') {
+                    // Move forward
+                    box.position.x += 0.12; // Speed
+
+                    // Scanner Interaction
+                    const dist = Math.abs(box.position.x - scannerX);
+                    if (dist < 1.5) {
+                        edges.material.color.setHex(0xffffff);
+                        edges.material.opacity = 1.0;
+                    } else {
+                        edges.material.color.setHex(accentColor);
+                        edges.material.opacity = 0.4;
+                    }
+
+                    // Launch Logic
+                    if (box.position.x > 30) {
+                        ud.state = 'flying';
+                        // Physics impulse
+                        ud.velocity.set(
+                            0.15 + Math.random() * 0.05, // X
+                            0.3 + Math.random() * 0.1,   // Y (Jump)
+                            (Math.random() - 0.5) * 0.2  // Z (Spread)
+                        );
+                        ud.rotationSpeed.set(
+                            Math.random() * 0.1,
+                            Math.random() * 0.1,
+                            Math.random() * 0.1
+                        );
+                    }
+                } else {
+                    // Flying Physics
+                    box.position.add(ud.velocity);
+                    box.rotation.x += ud.rotationSpeed.x;
+                    box.rotation.y += ud.rotationSpeed.y;
+                    box.rotation.z += ud.rotationSpeed.z;
+
+                    // Gravity
+                    ud.velocity.y -= 0.01;
+                    ud.velocity.x *= 0.99; // Air resistance
+
+                    // Reset Logic
+                    if (box.position.y < -15) {
+                        ud.state = 'belt';
+                        box.position.set(-45, ud.originalY, 0);
+                        box.rotation.set(0, (Math.random() - 0.5) * 0.4, 0);
+                        ud.velocity.set(0,0,0);
+                        ud.rotationSpeed.set(0,0,0);
+                    }
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+
+        // --- ROBUST RESIZE HANDLER ---
+        window.addEventListener('resize', () => {
+            const newAspect = window.innerWidth / window.innerHeight;
+            
+            // Update camera frustum to maintain isometric scale
+            camera.left = -viewSize * newAspect;
+            camera.right = viewSize * newAspect;
+            camera.top = viewSize;
+            camera.bottom = -viewSize;
+            
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // Don't forget to update pixel ratio on move between screens
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+
+        // --- UI INTERACTION ---
+        const btn = document.getElementById('waitlistBtn');
+        const secondaryBtn = document.querySelector('.btn-secondary');
+
+        // Smooth Scroll
+        secondaryBtn.addEventListener('click', () => {
+            document.getElementById('how-it-works').scrollIntoView({ 
+                behavior: 'smooth', block: 'start' 
+            });
+        });
+
+        // Waitlist Logic
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('success')) return;
+
+            const originalText = btn.textContent;
+            btn.style.width = `${btn.offsetWidth}px`; // Fix width to prevent jump
+            btn.textContent = 'Verifying...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                btn.textContent = "✓ You\'re on the list"; // ESCAPED QUOTE FIXED HERE
+                btn.style.background = 'var(--success)';
+                btn.style.color = '#000'; // Better contrast on green
+                btn.style.boxShadow = '0 0 20px rgba(48, 209, 88, 0.4)';
+                btn.classList.add('success');
+            }, 800);
+        });
+    </script>
 </body>
 </html>
