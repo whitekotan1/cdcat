@@ -1,7 +1,7 @@
 package main
 
 import (
-	api "cdcat/handlers"
+	"cdcat/api"
 	"fmt"
 	"net/http"
 	"os"
