@@ -1,6 +1,7 @@
 package api
 
 import (
+	"cdcat/services"
 	"cdcat/types"
 	"encoding/json"
 	"net/http"
@@ -20,6 +21,8 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	services.CreateUserProject(request)
 
 	response := types.Response{
 		Status:  "cat",
