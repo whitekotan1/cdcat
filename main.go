@@ -47,12 +47,22 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var response Response
+	var request Request
 
-	err := json.NewDecoder(r.Body).Decode(&response)
+	err := json.NewDecoder(r.Body).Decode(&request)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	response := Response{
+		Status:  "cat",
+		Message: "cat received your repos" + request.RepoUrl,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+
 }
