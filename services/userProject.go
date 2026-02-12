@@ -21,18 +21,19 @@ func CreateUserProject(request types.Request) types.UserProject {
 	if err != nil {
 		fmt.Println("error", err)
 	}
+
 	return userProject
 
 }
 
-func CreateProjectContainer() {
-	cmd := exec.Command("ls", "-l")
+func CloneUserProject(userProject types.UserProject) {
 
-	output, err := cmd.Output()
+	projectDir := strconv.Itoa(userProject.ID)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	cloneProjectCmd := exec.Command("git", "clone", userProject.GihubLink, projectDir)
 
-	fmt.Println(string(output))
+	cloneProjectOutput := cloneProjectCmd.Run()
+
+	fmt.Println("success", cloneProjectOutput)
+
 }

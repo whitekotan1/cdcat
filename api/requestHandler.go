@@ -22,8 +22,8 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	services.CreateUserProject(request)
-	services.CreateProjectContainer()
+	var userProject types.UserProject = services.CreateUserProject(request)
+	services.CloneUserProject(userProject)
 
 	response := types.Response{
 		Status:  "cat",
