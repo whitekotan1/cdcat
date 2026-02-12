@@ -23,6 +23,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	services.CreateUserProject(request)
+	services.CreateProjectContainer()
 
 	response := types.Response{
 		Status:  "cat",

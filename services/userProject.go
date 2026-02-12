@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+	"os/exec"
 	"strconv"
 )
 
@@ -22,4 +23,16 @@ func CreateUserProject(request types.Request) types.UserProject {
 	}
 	return userProject
 
+}
+
+func CreateProjectContainer() {
+	cmd := exec.Command("ls", "-l")
+
+	output, err := cmd.Output()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(output))
 }
