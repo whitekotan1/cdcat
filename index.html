@@ -43,12 +43,11 @@
             overflow: hidden;
         }
 
-        /* Канвас на заднем плане, но с pointer-events: none, чтобы не перехватывал скролл */
         #canvas-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            opacity: 0.8; /* Чуть повысил для четкости после PixelRatio фикса */
+            opacity: 0.8;
             pointer-events: none;
         }
 
@@ -56,14 +55,13 @@
             position: relative;
             z-index: 2;
             max-width: 980px;
+            width: 100%;
             text-align: center;
-            /* Легкий блюр под текстом, чтобы 3D не мешало читать */
-            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+            background: radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, transparent 70%);
             padding: 40px;
             border-radius: 40px;
         }
 
-        /* Декоративное свечение */
         .hero::before {
             content: '';
             position: absolute;
@@ -106,52 +104,81 @@
             margin-right: auto;
         }
 
-        /* --- BUTTONS --- */
-        .cta-group {
+        /* --- DEPLOY FORM --- */
+        .deploy-form {
             display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .btn {
-            padding: 16px 36px;
-            border-radius: 980px;
-            font-size: 17px;
-            font-weight: 600;
-            text-decoration: none;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer;
-            border: none;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        .btn-primary {
+        .deploy-form:focus-within {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 50px rgba(10, 132, 255, 0.15);
+        }
+
+        .deploy-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 16px;
+            padding: 0 24px;
+            outline: none;
+            font-family: 'SF Mono', 'Menlo', monospace; /* Monospace for URL looks better */
+        }
+
+        .deploy-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .btn-submit {
+            padding: 14px 32px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
             background: var(--accent);
             color: white;
-            box-shadow: 0 4px 24px var(--accent-glow);
+            transition: all 0.2s;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px var(--accent-glow);
-            filter: brightness(1.1);
-        }
-        
-        .btn-primary:active { transform: translateY(0); }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
+        .btn-submit:hover {
+            background: #0077ed;
+            transform: scale(1.02);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--text);
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: #444;
+            transform: none;
+        }
+
+        /* Error Animation */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: var(--danger) !important;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         .note {
@@ -159,6 +186,7 @@
             color: var(--text-secondary);
             margin-top: 16px;
             opacity: 0.7;
+            height: 20px; /* Fixed height to prevent layout jump on status change */
         }
 
         /* --- SECTIONS --- */
@@ -200,7 +228,6 @@
             position: relative;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            /* Оптимизация композиции слоев */
             will-change: transform; 
             transition: transform 0.3s ease, border-color 0.3s ease;
         }
@@ -212,7 +239,7 @@
 
         .card-badge {
             position: absolute;
-            top: 24px; right: 24px; /* Переместил в угол для чистоты */
+            top: 24px; right: 24px;
             padding: 6px 14px;
             border-radius: 100px;
             font-size: 12px;
@@ -280,8 +307,9 @@
             h1 { font-size: 42px; }
             .card { padding: 32px 24px; }
             .card-badge { position: static; display: inline-block; margin-bottom: 16px; }
-            .cta-group { flex-direction: column; }
-            .btn { width: 100%; }
+            .deploy-form { flex-direction: column; padding: 12px; border-radius: 24px; }
+            .deploy-input { margin-bottom: 12px; text-align: center; }
+            .btn-submit { width: 100%; }
         }
     </style>
 </head>
@@ -296,11 +324,21 @@
                 Your app goes viral? Celebrate. <br>
                 Don't file for bankruptcy due to bandwidth bills.
             </p>
-            <div class="cta-group">
-                <button class="btn btn-primary" id="waitlistBtn">Join Waitlist</button>
-                <button class="btn btn-secondary">See How It Works</button>
-            </div>
-            <p class="note">Open Source • No Credit Card Required</p>
+            
+            <form class="deploy-form" id="repoForm">
+                <input 
+                    type="text" 
+                    class="deploy-input" 
+                    id="repoUrl" 
+                    placeholder="github.com/username/project" 
+                    autocomplete="off"
+                >
+                <button type="submit" class="btn-submit" id="deployBtn">
+                    Deploy Now
+                </button>
+            </form>
+
+            <p class="note" id="statusMsg">No Credit Card Required</p>
         </div>
     </section>
 
@@ -374,11 +412,8 @@
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
-        // Fog for depth fading - hides the edges of the conveyor
         scene.fog = new THREE.FogExp2(0x000000, 0.035);
 
-        // ISOMETRIC CAMERA SETUP
-        // We use Orthographic to achieve that engineering/schematic look
         const viewSize = 35; 
         const aspect = window.innerWidth / window.innerHeight;
         const camera = new THREE.OrthographicCamera(
@@ -386,17 +421,15 @@
             viewSize, -viewSize, 
             1, 1000
         );
-        camera.position.set(20, 20, 20); // Isometric angle
+        camera.position.set(20, 20, 20);
         camera.lookAt(scene.position);
 
-        // RENDERER OPTIMIZATION
         const renderer = new THREE.WebGLRenderer({ 
             alpha: true, 
             antialias: true,
             powerPreference: "high-performance"
         });
         
-        // Critical for crisp text/lines on Retina displays
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
@@ -406,26 +439,14 @@
         const boxColor = 0x1a1a1a;
         const accentColor = 0x0a84ff;
 
-        // Materials (Created once for performance)
         const materials = {
-            belt: new THREE.MeshStandardMaterial({ 
-                color: beltColor, roughness: 0.7, metalness: 0.1 
-            }),
+            belt: new THREE.MeshStandardMaterial({ color: beltColor, roughness: 0.7, metalness: 0.1 }),
             rail: new THREE.MeshBasicMaterial({ color: accentColor }),
-            glow: new THREE.MeshBasicMaterial({ 
-                color: accentColor, transparent: true, opacity: 0.2 
-            }),
-            box: new THREE.MeshStandardMaterial({ 
-                color: boxColor, roughness: 0.2, metalness: 0.5
-            }),
-            scanner: new THREE.MeshBasicMaterial({ 
-                color: accentColor, transparent: true, opacity: 0.1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending 
-            })
+            box: new THREE.MeshStandardMaterial({ color: boxColor, roughness: 0.2, metalness: 0.5 }),
+            scanner: new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0.1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
         };
 
-        // --- SCENE CONSTRUCTION ---
-        
-        // Lighting
+        // --- SCENE ---
         const ambLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambLight);
         
@@ -433,35 +454,27 @@
         dirLight.position.set(10, 20, 5);
         scene.add(dirLight);
         
-        // Blue rim light for "Tech" vibe
         const rimLight = new THREE.DirectionalLight(0x0a84ff, 1.2);
         rimLight.position.set(-10, 5, -10);
         scene.add(rimLight);
 
-        // The Conveyor Belt Structure
         const beltGroup = new THREE.Group();
-        
-        // Base
         const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(80, 1, 6), materials.belt);
         beltMesh.position.y = -2;
         beltGroup.add(beltMesh);
 
-        // Rails
         const railGeo = new THREE.BoxGeometry(80, 0.1, 0.1);
         const rail1 = new THREE.Mesh(railGeo, materials.rail);
         rail1.position.set(0, -1.4, 3.1);
         const rail2 = new THREE.Mesh(railGeo, materials.rail);
         rail2.position.set(0, -1.4, -3.1);
         beltGroup.add(rail1, rail2);
-
         scene.add(beltGroup);
 
-        // Scanner Beam
         const scannerMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 12), materials.scanner);
         scannerMesh.rotation.y = Math.PI / 2;
         scene.add(scannerMesh);
 
-        // Boxes (The Packages)
         const boxes = [];
         const boxGeo = new THREE.BoxGeometry(2.5, 2.5, 2.5);
         const edgesGeo = new THREE.EdgesGeometry(boxGeo);
@@ -469,20 +482,16 @@
 
         for(let i = 0; i < 15; i++) {
             const boxGroup = new THREE.Group();
-            
             const mesh = new THREE.Mesh(boxGeo, materials.box);
-            const edges = new THREE.LineSegments(edgesGeo, edgeMat.clone()); // Clone to animate opacity individually
+            const edges = new THREE.LineSegments(edgesGeo, edgeMat.clone());
             
             boxGroup.add(mesh);
             boxGroup.add(edges);
-            
-            // Random initial placement
             boxGroup.position.set(-40 + i * 6, -0.25, 0);
             boxGroup.rotation.y = (Math.random() - 0.5) * 0.4;
             
-            // State management
             boxGroup.userData = {
-                state: 'belt', // 'belt' or 'flying'
+                state: 'belt',
                 velocity: new THREE.Vector3(),
                 rotationSpeed: new THREE.Vector3(),
                 originalY: -0.25
@@ -492,28 +501,23 @@
             boxes.push(boxGroup);
         }
 
-        // --- ANIMATION LOOP ---
+        // --- ANIMATION ---
         let time = 0;
-
         function animate() {
             requestAnimationFrame(animate);
             time += 0.02;
 
-            // Animate Scanner
             const scannerX = Math.sin(time * 0.5) * 5;
             scannerMesh.position.x = scannerX;
             scannerMesh.material.opacity = 0.1 + Math.abs(Math.sin(time * 2)) * 0.2;
 
-            // Animate Boxes
             boxes.forEach(box => {
                 const ud = box.userData;
                 const edges = box.children[1];
 
                 if (ud.state === 'belt') {
-                    // Move forward
-                    box.position.x += 0.12; // Speed
-
-                    // Scanner Interaction
+                    box.position.x += 0.12;
+                    
                     const dist = Math.abs(box.position.x - scannerX);
                     if (dist < 1.5) {
                         edges.material.color.setHex(0xffffff);
@@ -523,33 +527,23 @@
                         edges.material.opacity = 0.4;
                     }
 
-                    // Launch Logic
                     if (box.position.x > 30) {
                         ud.state = 'flying';
-                        // Physics impulse
                         ud.velocity.set(
-                            0.15 + Math.random() * 0.05, // X
-                            0.3 + Math.random() * 0.1,   // Y (Jump)
-                            (Math.random() - 0.5) * 0.2  // Z (Spread)
+                            0.15 + Math.random() * 0.05,
+                            0.3 + Math.random() * 0.1,
+                            (Math.random() - 0.5) * 0.2
                         );
-                        ud.rotationSpeed.set(
-                            Math.random() * 0.1,
-                            Math.random() * 0.1,
-                            Math.random() * 0.1
-                        );
+                        ud.rotationSpeed.set(Math.random()*0.1, Math.random()*0.1, Math.random()*0.1);
                     }
                 } else {
-                    // Flying Physics
                     box.position.add(ud.velocity);
                     box.rotation.x += ud.rotationSpeed.x;
                     box.rotation.y += ud.rotationSpeed.y;
                     box.rotation.z += ud.rotationSpeed.z;
-
-                    // Gravity
                     ud.velocity.y -= 0.01;
-                    ud.velocity.x *= 0.99; // Air resistance
+                    ud.velocity.x *= 0.99;
 
-                    // Reset Logic
                     if (box.position.y < -15) {
                         ud.state = 'belt';
                         box.position.set(-45, ud.originalY, 0);
@@ -562,52 +556,85 @@
 
             renderer.render(scene, camera);
         }
-        
         animate();
 
-        // --- ROBUST RESIZE HANDLER ---
         window.addEventListener('resize', () => {
             const newAspect = window.innerWidth / window.innerHeight;
-            
-            // Update camera frustum to maintain isometric scale
             camera.left = -viewSize * newAspect;
             camera.right = viewSize * newAspect;
             camera.top = viewSize;
             camera.bottom = -viewSize;
-            
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            // Don't forget to update pixel ratio on move between screens
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         });
 
-        // --- UI INTERACTION ---
-        const btn = document.getElementById('waitlistBtn');
-        const secondaryBtn = document.querySelector('.btn-secondary');
+        // === FORM HANDLING ===
+        const form = document.getElementById('repoForm');
+        const input = document.getElementById('repoUrl');
+        const btn = document.getElementById('deployBtn');
+        const statusMsg = document.getElementById('statusMsg');
 
-        // Smooth Scroll
-        secondaryBtn.addEventListener('click', () => {
-            document.getElementById('how-it-works').scrollIntoView({ 
-                behavior: 'smooth', block: 'start' 
-            });
-        });
-
-        // Waitlist Logic
-        btn.addEventListener('click', () => {
-            if (btn.classList.contains('success')) return;
-
-            const originalText = btn.textContent;
-            btn.style.width = `${btn.offsetWidth}px`; // Fix width to prevent jump
-            btn.textContent = 'Verifying...';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            // Simulate API call
-            setTimeout(() => {
-                btn.textContent = "✓ You\'re on the list"; // ESCAPED QUOTE FIXED HERE
-                btn.style.background = 'var(--success)';
-                btn.style.color = '#000'; // Better contrast on green
-                btn.style.boxShadow = '0 0 20px rgba(48, 209, 88, 0.4)';
-                btn.classList.add('success');
-            }, 800);
+            const url = input.value.trim();
+            if (!url) {
+                form.classList.add('shake');
+                setTimeout(() => form.classList.remove('shake'), 500);
+                return;
+            }
+
+            const originalBtnText = btn.textContent;
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+            input.disabled = true;
+            statusMsg.style.color = 'var(--text-secondary)';
+            statusMsg.textContent = 'Contacting build server...';
+
+            try {
+                // IMPORTANT: Ensure your Go server handles CORS for this to work
+                const response = await fetch('http://localhost:5000/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ repo: url }) 
+                });
+
+                if (response.ok) {
+                    btn.style.background = 'var(--success)';
+                    btn.textContent = 'Success!';
+                    statusMsg.style.color = 'var(--success)';
+                    statusMsg.textContent = 'Build queued successfully! Check your terminal.';
+                    
+                    setTimeout(() => {
+                        btn.style.background = 'var(--accent)';
+                        btn.textContent = originalBtnText;
+                        btn.disabled = false;
+                        input.disabled = false;
+                        input.value = '';
+                        statusMsg.style.color = 'var(--text-secondary)';
+                        statusMsg.textContent = 'No Credit Card Required';
+                    }, 3000);
+                } else {
+                    throw new Error('Server returned error');
+                }
+
+            } catch (error) {
+                console.error(error);
+                btn.style.background = 'var(--danger)';
+                btn.textContent = 'Error';
+                statusMsg.style.color = 'var(--danger)';
+                statusMsg.textContent = 'Connection failed. Is server running on port 5000?';
+                form.classList.add('shake');
+                
+                setTimeout(() => {
+                    btn.style.background = 'var(--accent)';
+                    btn.textContent = originalBtnText;
+                    btn.disabled = false;
+                    input.disabled = false;
+                    form.classList.remove('shake');
+                }, 3000);
+            }
         });
     </script>
 </body>
