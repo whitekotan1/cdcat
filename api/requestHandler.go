@@ -25,6 +25,8 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	var userProject types.UserProject = services.CreateUserProject(request)
 	services.CloneUserProject(userProject)
 
+	services.BuildUserProject(userProject)
+
 	response := types.Response{
 		Status:  "cat",
 		Message: "cat received your repos" + request.RepoUrl,
