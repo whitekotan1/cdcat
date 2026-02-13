@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 )
 
@@ -32,8 +33,38 @@ func CloneUserProject(userProject types.UserProject) {
 
 	cloneProjectCmd := exec.Command("git", "clone", userProject.GihubLink, projectDir)
 
-	cloneProjectOutput := cloneProjectCmd.Run()
+	cloneProjectOutput, err := cloneProjectCmd.CombinedOutput()
 
-	fmt.Println("success", cloneProjectOutput)
+	if err != nil {
+		fmt.Println("cant clone git repo", err)
+	}
 
+	fmt.Println("success", string(cloneProjectOutput))
+
+}
+
+func BuildUserProject(userProject types.UserProject) {
+
+	projectDir := strconv.Itoa(userProject.ID)
+
+	absolutePath, err := filepath.Abs(projectDir)
+	if err != nil {
+		fmt.Println("path error", err)
+		return
+	}
+
+	buildUserProject := exec.Command(
+		"docker", "run", "--rm",
+		"-v", absolutePath+":/app",
+		"-w", "/app",
+		"node:20",
+		"sh", "-c", "npm install && npm run build",
+	)
+
+	buildResult, err := buildUserProject.CombinedOutput()
+	if err != nil {
+		fmt.Println("build unsuccessful", err)
+	}
+
+	fmt.Println(string(buildResult))
 }
