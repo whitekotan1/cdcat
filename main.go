@@ -2,6 +2,7 @@ package main
 
 import (
 	"cdcat/api"
+	"cdcat/services"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 func main() {
 	fmt.Println("hii")
+	services.R2_service()
 
 	http.HandleFunc("/", api.HandlePage)
 	http.HandleFunc("/request", api.HandleRequest)
