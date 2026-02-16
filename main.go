@@ -10,9 +10,9 @@ import (
 
 func main() {
 	fmt.Println("hii")
-	services.LoadEnv()
+	cloudflareConfig := services.LoadEnv()
 
-	services.Initialize_R2()
+	services.Initialize_R2(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
 	http.HandleFunc("/request", api.HandleRequest)
 

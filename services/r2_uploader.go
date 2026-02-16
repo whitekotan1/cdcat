@@ -6,6 +6,8 @@ import (
 
 	"os"
 
+	"cdcat/types"
+
 	"github.com/joho/godotenv"
 
 	"context"
@@ -16,7 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func LoadEnv() {
+func LoadEnv() types.R2Config {
 
 	fmt.Println("for r2")
 
@@ -26,29 +28,24 @@ func LoadEnv() {
 		fmt.Println("cant load .env")
 	}
 
-	bucketName := os.Getenv("bucketName")
-	accountId := os.Getenv("accountId")
-	accessKeyId := os.Getenv("accessKeyId")
-	accessKeySecret := os.Getenv("accessKeySecret")
+	r2_cfg := types.R2Config{
 
-	fmt.Println(bucketName, accountId, accessKeyId, accessKeySecret)
+		BucketName:      os.Getenv("bucketName"),
+		AccountID:       os.Getenv("accountId"),
+		AccessKeyID:     os.Getenv("accessKeyId"),
+		AccessKeySecret: os.Getenv("accessKeySecret"),
+	}
+
+	return r2_cfg
 
 }
 
-func Initialize_R2() {
+func Initialize_R2(r2_cfg types.R2Config) {
 
-	fmt.Println("for r2")
-
-	loadFromEnv := godotenv.Load(".env")
-
-	if loadFromEnv != nil {
-		fmt.Println("cant load .env")
-	}
-
-	bucketName := os.Getenv("bucketName")
-	accountId := os.Getenv("accountId")
-	accessKeyId := os.Getenv("accessKeyId")
-	accessKeySecret := os.Getenv("accessKeySecret")
+	bucketName := r2_cfg.BucketName
+	accountId := r2_cfg.AccountID
+	accessKeyId := r2_cfg.AccessKeyID
+	accessKeySecret := r2_cfg.AccessKeySecret
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret, "")),
