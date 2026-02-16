@@ -14,3 +14,10 @@ type UserProject struct {
 	GihubLink string `json:"githublink"`
 	UserID    int    `json:"userid"`
 }
+
+type R2Config struct {
+	BucketName      string
+	AccountID       string
+	AccessKeyID     string
+	AccessKeySecret string
+}
