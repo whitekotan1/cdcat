@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"cdcat/types"
+	"io"
 
 	"github.com/joho/godotenv"
 
@@ -40,7 +41,7 @@ func LoadEnv() types.R2Config {
 
 }
 
-func Initialize_R2(r2_cfg types.R2Config) {
+func Initialize_R2(r2_cfg types.R2Config) *s3.Client {
 
 	bucketName := r2_cfg.BucketName
 	accountId := r2_cfg.AccountID
@@ -72,5 +73,25 @@ func Initialize_R2(r2_cfg types.R2Config) {
 		obj, _ := json.MarshalIndent(object, "", "\t")
 		fmt.Println(string(obj))
 	}
+
+	return client
+
+}
+
+func UploadFileToR2(client *s3.Client, bucketName string, key string, body io.Reader) error {
+	input := &s3.PutObjectInput{
+		Bucket:      aws.String(bucketName),
+		Key:         aws.String(key),
+		Body:        body,
+		ContentType: aws.String("application/octet-stream"),
+	}
+
+	_, err := client.PutObject(context.TODO(), input)
+
+	if err != nil {
+		fmt.Println("can't input file to r2")
+	}
+	fmt.Printf("uploaded file", key)
+	return nil
 
 }

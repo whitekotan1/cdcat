@@ -10,9 +10,23 @@ import (
 
 func main() {
 	fmt.Println("hii")
-	cloudflareConfig := services.LoadEnv()
+	cloudflareKeys := services.LoadEnv()
 
-	services.Initialize_R2(cloudflareConfig)
+	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
+
+	openFile, openErr := os.Open("C:/IT/cdcat/index.html")
+	if openErr != nil {
+		fmt.Println("can't find file", openErr)
+		return
+	}
+	defer openFile.Close()
+
+	uploadErr := services.UploadFileToR2(cloudflareConfig, "cdcat", "index.html", openFile)
+	if uploadErr != nil {
+		fmt.Println("can't upload to r2")
+	}
+
+	fmt.Println(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
 	http.HandleFunc("/request", api.HandleRequest)
 
