@@ -10,8 +10,9 @@ import (
 
 func main() {
 	fmt.Println("hii")
-	services.R2_service()
+	services.LoadEnv()
 
+	services.Initialize_R2()
 	http.HandleFunc("/", api.HandlePage)
 	http.HandleFunc("/request", api.HandleRequest)
 
