@@ -62,7 +62,8 @@ func BuildUserProject(userProject types.UserProject) {
 		"node:20",
 		"sh", "-c", "npm install && npm run build",
 	)
-
+	userProject.DistPath = filepath.Join(absolutePath, "dist")
+	fmt.Println(userProject.DistPath)
 	buildResult, err := buildUserProject.CombinedOutput()
 	if err != nil {
 		fmt.Println("build unsuccessful", err)
