@@ -27,7 +27,7 @@ func CreateUserProject(request types.Request) types.UserProject {
 
 }
 
-func CloneUserProject(userProject types.UserProject) {
+func CloneUserProject(userProject types.UserProject) error {
 
 	projectDir := strconv.Itoa(userProject.ID)
 
@@ -40,6 +40,8 @@ func CloneUserProject(userProject types.UserProject) {
 	}
 
 	fmt.Println("success", string(cloneProjectOutput))
+
+	return nil
 
 }
 
