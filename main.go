@@ -14,7 +14,7 @@ func main() {
 
 	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
 
-	openFile, openErr := os.Open("C:/IT/cdcat/index.html")
+	openFile, openErr := services.OpenFile("C:/IT/cdcat/dist/index.html")
 	if openErr != nil {
 		fmt.Println("can't find file", openErr)
 		return
