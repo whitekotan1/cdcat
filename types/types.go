@@ -13,6 +13,7 @@ type UserProject struct {
 	ID        int    `json:"id"`
 	GihubLink string `json:"githublink"`
 	UserID    int    `json:"userid"`
+	DistPath  string `json:"distpath"`
 }
 
 type R2Config struct {
