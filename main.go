@@ -3,6 +3,7 @@ package main
 import (
 	"cdcat/api"
 	"cdcat/services"
+	"cdcat/types"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,7 +15,13 @@ func main() {
 
 	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
 
-	services.DeployPipeline("C:/IT/cdcat/dist/index.html", "cdcat", "myFIle.html", cloudflareConfig)
+	R2Client := types.R2Client{
+		CloudflareCfg: cloudflareConfig,
+	}
+
+	fmt.Println(R2Client)
+
+	//services.DeployPipeline("C:/IT/cdcat/dist/index.html", "cdcat", "myFIle.html", )
 
 	fmt.Println(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
