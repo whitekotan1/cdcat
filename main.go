@@ -14,17 +14,7 @@ func main() {
 
 	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
 
-	openFile, openErr := services.OpenFile("C:/IT/cdcat/dist/index.html")
-	if openErr != nil {
-		fmt.Println("can't find file", openErr)
-		return
-	}
-	defer openFile.Close()
-
-	uploadErr := services.UploadFileToR2(cloudflareConfig, "cdcat", "index.html", openFile)
-	if uploadErr != nil {
-		fmt.Println("can't upload to r2")
-	}
+	services.DeployPipeline("C:/IT/cdcat/dist/index.html", "cdcat", "myFIle.html", cloudflareConfig)
 
 	fmt.Println(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
