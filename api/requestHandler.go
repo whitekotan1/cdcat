@@ -5,9 +5,16 @@ import (
 	"cdcat/types"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func HandleRequest(w http.ResponseWriter, r *http.Request) {
+type R2Client struct {
+	CloudflareCfg *s3.Client
+}
+
+func (client *R2Client) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "only post", http.StatusMethodNotAllowed)
 		return
@@ -21,12 +28,16 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	/*
+		var userProject types.UserProject = services.CreateUserProject(request)
+		services.CloneUserProject(userProject)
 
-	var userProject types.UserProject = services.CreateUserProject(request)
-	services.CloneUserProject(userProject)
+		services.BuildUserProject(userProject)
+	*/
 
-	services.BuildUserProject(userProject)
+	var userProject types.UserProject = services.BuildProjectPipeline(request)
 
+	services.DeployPipeline(userProject.DistPath, "cdcat", strconv.Itoa(userProject.ID), client.CloudflareCfg)
 	response := types.Response{
 		Status:  "cat",
 		Message: "cat received your repos" + request.RepoUrl,

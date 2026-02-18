@@ -3,7 +3,6 @@ package main
 import (
 	"cdcat/api"
 	"cdcat/services"
-	"cdcat/types"
 	"fmt"
 	"net/http"
 	"os"
@@ -15,7 +14,7 @@ func main() {
 
 	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
 
-	R2Client := types.R2Client{
+	R2Client := api.R2Client{
 		CloudflareCfg: cloudflareConfig,
 	}
 
@@ -25,7 +24,7 @@ func main() {
 
 	fmt.Println(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
-	http.HandleFunc("/request", api.HandleRequest)
+	http.HandleFunc("/request", R2Client.HandleRequest)
 
 	err := http.ListenAndServe(":5000", nil)
 
