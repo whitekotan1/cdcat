@@ -1,7 +1,5 @@
 package types
 
-import "github.com/aws/aws-sdk-go-v2/service/s3"
-
 type Request struct {
 	RepoUrl string `json:"repoUrl"`
 }
@@ -23,8 +21,4 @@ type R2Config struct {
 	AccountID       string
 	AccessKeyID     string
 	AccessKeySecret string
-}
-
-type R2Client struct {
-	CloudflareCfg *s3.Client
 }
