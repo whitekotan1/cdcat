@@ -19,18 +19,13 @@ func BuildProjectPipeline(request types.Request) types.UserProject {
 	return userProject
 }
 
-func DeployPipeline(filePath string, bucketName string, fileName string, cloudflareConfig *s3.Client) {
+func DeployPipeline(distPath string, bucketName string, projectID string, cloudflareConfig *s3.Client) {
 
-	openFile, openErr := OpenFile(filePath)
-	if openErr != nil {
-		fmt.Println("can't find file", openErr)
+	err := UploadFolder(cloudflareConfig, bucketName, projectID, distPath)
+
+	if err != nil {
+		fmt.Printf("can't depploy %v\n", err)
 		return
-	}
-	defer openFile.Close()
-
-	uploadErr := UploadFileToR2(cloudflareConfig, bucketName, fileName, openFile)
-	if uploadErr != nil {
-		fmt.Println("can't upload to r2")
 	}
 
 }
