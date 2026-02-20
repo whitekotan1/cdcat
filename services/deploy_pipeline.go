@@ -9,12 +9,12 @@ import (
 
 func BuildProjectPipeline(request types.Request) types.UserProject {
 	userProject := CreateUserProject(request)
+	DeleteUserProject(userProject.DistPath)
 
 	cloneErr := CloneUserProject(userProject)
 	if cloneErr != nil {
 		fmt.Println("can't clone repo")
 	}
-
 	userProject.DistPath = BuildUserProject(userProject)
 
 	return userProject
@@ -26,6 +26,7 @@ func DeployPipeline(distPath string, bucketName string, projectID string, cloudf
 
 	if err != nil {
 		fmt.Printf("can't depploy %v\n", err)
+		DeleteUserProject(distPath)
 		return
 	}
 

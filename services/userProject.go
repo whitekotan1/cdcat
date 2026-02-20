@@ -73,3 +73,12 @@ func BuildUserProject(userProject types.UserProject) string {
 
 	return userProject.DistPath
 }
+
+func DeleteUserProject(projectPath string) {
+
+	err := os.RemoveAll(projectPath)
+
+	if err != nil {
+		fmt.Println("can't remove folder")
+	}
+}
