@@ -45,14 +45,14 @@ func CloneUserProject(userProject types.UserProject) error {
 
 }
 
-func BuildUserProject(userProject types.UserProject) {
+func BuildUserProject(userProject types.UserProject) string {
 
 	projectDir := strconv.Itoa(userProject.ID)
 
 	absolutePath, err := filepath.Abs(projectDir)
 	if err != nil {
 		fmt.Println("path error", err)
-		return
+		return ""
 	}
 
 	buildUserProject := exec.Command(
@@ -70,4 +70,6 @@ func BuildUserProject(userProject types.UserProject) {
 	}
 
 	fmt.Println(string(buildResult))
+
+	return userProject.DistPath
 }

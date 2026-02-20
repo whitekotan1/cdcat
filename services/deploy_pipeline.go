@@ -14,7 +14,8 @@ func BuildProjectPipeline(request types.Request) types.UserProject {
 	if cloneErr != nil {
 		fmt.Println("can't clone repo")
 	}
-	BuildUserProject(userProject)
+
+	userProject.DistPath = BuildUserProject(userProject)
 
 	return userProject
 }
