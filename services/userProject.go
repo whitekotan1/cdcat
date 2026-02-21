@@ -60,7 +60,7 @@ func BuildUserProject(userProject types.UserProject) string {
 		"-v", absolutePath+":/app",
 		"-w", "/app",
 		"node:20",
-		"sh", "-c", "npm install && npm run build && chmod -R 777 /app/dist",
+		"sh", "-c", "npm install && npm run build && chmod -R 777 /app",
 	)
 	userProject.DistPath = filepath.Join(absolutePath, "dist")
 	fmt.Println(userProject.DistPath)
@@ -74,11 +74,17 @@ func BuildUserProject(userProject types.UserProject) string {
 	return userProject.DistPath
 }
 
-func DeleteUserProject(projectPath string) {
+func DeleteUserProject(projectPath string, clonedProject string) {
 
 	err := os.RemoveAll(projectPath)
 
 	if err != nil {
-		fmt.Println("can't remove folder", err)
+		fmt.Println("can't remove compiled project folder", err)
+	}
+
+	err = os.RemoveAll(clonedProject)
+
+	if err != nil {
+		fmt.Println("can't remove cloned project folder")
 	}
 }

@@ -23,11 +23,12 @@ func DeployPipeline(distPath string, bucketName string, projectID string, cloudf
 
 	err := UploadFolder(cloudflareConfig, bucketName, projectID, distPath)
 
+	clonedProjectPath := projectID
 	if err != nil {
 		fmt.Printf("can't depploy %v\n", err)
-		DeleteUserProject(distPath)
+		DeleteUserProject(distPath, clonedProjectPath)
 		return
 	}
-	DeleteUserProject(distPath)
+	DeleteUserProject(distPath, clonedProjectPath)
 
 }
