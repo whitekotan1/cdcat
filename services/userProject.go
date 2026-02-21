@@ -4,6 +4,7 @@ import (
 	"cdcat/types"
 	"fmt"
 	"math/rand/v2"
+	"mime"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -87,4 +88,12 @@ func DeleteUserProject(projectPath string, clonedProject string) {
 	if err != nil {
 		fmt.Println("can't remove cloned project folder")
 	}
+}
+
+func MimeTypifier(fileName string) string {
+
+	fileExtension := mime.TypeByExtension(fileName)
+
+	return fileExtension
+
 }
