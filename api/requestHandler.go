@@ -28,12 +28,6 @@ func (client *R2Client) HandleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	/*
-		var userProject types.UserProject = services.CreateUserProject(request)
-		services.CloneUserProject(userProject)
-
-		services.BuildUserProject(userProject)
-	*/
 
 	var userProject types.UserProject = services.BuildProjectPipeline(request)
 
