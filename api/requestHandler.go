@@ -37,8 +37,6 @@ func (client *R2Client) HandleRequest(w http.ResponseWriter, r *http.Request) {
 
 	var userProject types.UserProject = services.BuildProjectPipeline(request)
 
-	services.DeleteUserProject(userProject.DistPath)
-
 	services.DeployPipeline(userProject.DistPath, "cdcat", strconv.Itoa(userProject.ID), client.CloudflareCfg)
 
 	response := types.Response{

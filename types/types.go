@@ -1,7 +1,8 @@
 package types
 
 type Request struct {
-	RepoUrl string `json:"repoUrl"`
+	RepoUrl  string `json:"repoUrl"`
+	RepoType string `json:"repoType"`
 }
 
 type Response struct {

@@ -9,7 +9,6 @@ import (
 
 func BuildProjectPipeline(request types.Request) types.UserProject {
 	userProject := CreateUserProject(request)
-	DeleteUserProject(userProject.DistPath)
 
 	cloneErr := CloneUserProject(userProject)
 	if cloneErr != nil {
@@ -29,5 +28,6 @@ func DeployPipeline(distPath string, bucketName string, projectID string, cloudf
 		DeleteUserProject(distPath)
 		return
 	}
+	DeleteUserProject(distPath)
 
 }
