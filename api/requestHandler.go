@@ -4,6 +4,7 @@ import (
 	"cdcat/services"
 	"cdcat/types"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -36,7 +37,7 @@ func (client *R2Client) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	response := types.Response{
 
 		Status:  "cat",
-		Message: "cat received your repos" + request.RepoUrl,
+		Message: fmt.Sprintf("cat received your repos, your link https://%d.cdcat.xyz", userProject.ID),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
