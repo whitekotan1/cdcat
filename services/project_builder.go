@@ -4,7 +4,6 @@ import (
 	"cdcat/types"
 	"fmt"
 	"math/rand/v2"
-	"mime"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -73,27 +72,4 @@ func BuildUserProject(userProject types.UserProject) string {
 	fmt.Println(string(buildResult))
 
 	return userProject.DistPath
-}
-
-func DeleteUserProject(projectPath string, clonedProject string) {
-
-	err := os.RemoveAll(projectPath)
-
-	if err != nil {
-		fmt.Println("can't remove compiled project folder", err)
-	}
-
-	err = os.RemoveAll(clonedProject)
-
-	if err != nil {
-		fmt.Println("can't remove cloned project folder")
-	}
-}
-
-func MimeTypifier(fileName string) string {
-
-	fileExtension := mime.TypeByExtension(fileName)
-
-	return fileExtension
-
 }

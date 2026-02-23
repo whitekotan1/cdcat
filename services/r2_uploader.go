@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"mime"
 	"os"
 	"path/filepath"
 
@@ -70,4 +71,12 @@ func UploadFileToR2(client *s3.Client, bucketName string, key string, body io.Re
 
 	fmt.Println("uploaded file:", key)
 	return nil
+}
+
+func MimeTypifier(fileName string) string {
+
+	fileExtension := mime.TypeByExtension(fileName)
+
+	return fileExtension
+
 }
