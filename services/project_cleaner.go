@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func DeleteUserProject(projectPath string, clonedProject string) {
+func DeleteProjectFromServer(projectPath string, clonedProject string) {
 
 	err := os.RemoveAll(projectPath)
 

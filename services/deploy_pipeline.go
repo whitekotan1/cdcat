@@ -26,9 +26,9 @@ func DeployPipeline(distPath string, bucketName string, projectID string, cloudf
 	clonedProjectPath := projectID
 	if err != nil {
 		fmt.Printf("can't depploy %v\n", err)
-		DeleteUserProject(distPath, clonedProjectPath)
+		DeleteProjectFromServer(distPath, clonedProjectPath)
 		return
 	}
-	DeleteUserProject(distPath, clonedProjectPath)
+	DeleteProjectFromServer(distPath, clonedProjectPath)
 
 }
