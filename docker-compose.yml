@@ -15,11 +15,16 @@ services:
       POSTGRES_DB: "cdcat-pg"
       POSTGRES_USER: "whitekotan"
       POSTGRES_PASSWORD: "password123"
+
   
+
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d  
     ports:
       - "5432:5432"
+    
+    env_file:
+      - .env
 
     restart: unless-stopped
 
