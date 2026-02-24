@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    plan TEXT NOT NULL DEFAULT 'free'
+
+
+)
+
+
+CREATE TABLE IF NOT EXISTS projects (
+    
+)
