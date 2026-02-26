@@ -23,3 +23,10 @@ type R2Config struct {
 	AccessKeyID     string
 	AccessKeySecret string
 }
+
+type User struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Plan  string `json:"plan"`
+}
