@@ -1,7 +1,6 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"os"
@@ -42,7 +41,7 @@ func LoadEnv() types.R2Config {
 
 func Initialize_R2(r2_cfg types.R2Config) *s3.Client {
 
-	bucketName := r2_cfg.BucketName
+	//bucketName := r2_cfg.BucketName
 	accountId := r2_cfg.AccountID
 	accessKeyId := r2_cfg.AccessKeyID
 	accessKeySecret := r2_cfg.AccessKeySecret
@@ -59,20 +58,20 @@ func Initialize_R2(r2_cfg types.R2Config) *s3.Client {
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.BaseEndpoint = aws.String(fmt.Sprintf("https://%s.r2.cloudflarestorage.com", accountId))
 	})
+	/*
+		listObjectsOutput, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
+			Bucket: &bucketName,
+		})
 
-	listObjectsOutput, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
-		Bucket: &bucketName,
-	})
+		if err != nil {
+			fmt.Println("cat list objects")
+		}
 
-	if err != nil {
-		fmt.Println("cat list objects")
-	}
-
-	for _, object := range listObjectsOutput.Contents {
-		obj, _ := json.MarshalIndent(object, "", "\t")
-		fmt.Println(string(obj))
-	}
-
+		for _, object := range listObjectsOutput.Contents {
+			obj, _ := json.MarshalIndent(object, "", "\t")
+			fmt.Println(string(obj))
+		}
+	*/
 	return client
 
 }
