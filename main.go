@@ -3,6 +3,7 @@ package main
 import (
 	"cdcat/api"
 	"cdcat/services"
+	"cdcat/storage"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 func main() {
 	fmt.Println("hii")
+	storage.InitDB()
 	cloudflareKeys := services.LoadEnv()
 
 	cloudflareConfig := services.Initialize_R2(cloudflareKeys)
@@ -19,8 +21,6 @@ func main() {
 	}
 
 	fmt.Println(R2Client)
-
-	//services.DeployPipeline("C:/IT/cdcat/dist/index.html", "cdcat", "myFIle.html", )
 
 	fmt.Println(cloudflareConfig)
 	http.HandleFunc("/", api.HandlePage)
